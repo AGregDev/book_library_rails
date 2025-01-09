@@ -12,7 +12,7 @@ class User < ApplicationRecord
   end
 
   def self.ransackable_associations(auth_object = nil)
-    ["logs"]
+    ["logs", "borrowed_books"]
   end
 
   def borrow_book(book)
