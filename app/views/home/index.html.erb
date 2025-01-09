@@ -1,0 +1,10 @@
+<% if user_signed_in? %>
+  <h2>Welcome to BookLibrary</h2>
+  <p>You are signed in as <%= current_user.email %>.</p>
+  <%= button_to "Logout", destroy_user_session_path, method: :delete, class: "btn-logout" %>
+<% else %>
+  <h2>Welcome to BookLibrary</h2>
+  <p>Please sign in to access the library.</p>
+  <%= link_to "Login", new_user_session_path, class: "btn" %>
+  <%= link_to "Sign Up", new_user_registration_path, class: "btn" %>
+<% end %>
