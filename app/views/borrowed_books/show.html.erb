@@ -1,0 +1,24 @@
+
+<div class='text-start flex d-flex-column'>
+    <h1> <%= @book.title %> </h1>
+    <p class="">Borrowed at: <%= @book.borrowered_at.strftime("%B %d, %Y") %></p>
+    <p class="">Time remaining: <%= distance_of_time_in_words(Time.current, @book.borrowered_at + 2.weeks) %></p>
+
+    <h3 class="">Comments</h3>
+    <ul class="list-unstyled">
+    <% @book.comments.each do |comment| %>
+        <li class="d-flex justify-content-start align-items-center gap-5 py-2">
+        <strong><%= comment.user.email %>:</strong> <%= comment.content %>
+        <% if comment.user == current_user || current_user.is_admin? %>
+            <%= button_to 'Delete', comment_path(comment), method: :delete, data: { confirm: 'Are you sure?' }, class: 'btn btn-danger btn-sm' %>
+        <% end %>
+        </li>
+    <% end %>
+    </ul>
+
+    <h3 class="">Leave a Comment</h3>
+    <%= form_with url: comment_borrowed_book_path(@book), method: :post, local: true do |form| %>
+    <%= form.text_area :comment, placeholder: "Enter your comment", rows: 4, class: 'form-control' %>
+    <%= form.submit 'Post Comment', class: 'btn btn-primary mt-2' %>
+    <% end %>
+</div>

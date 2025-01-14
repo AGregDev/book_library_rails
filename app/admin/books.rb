@@ -1,5 +1,5 @@
 ActiveAdmin.register Book do
-  permit_params :title, :author, :library_id, category_ids: []
+  permit_params :title, :author, :library_id, :borrower_id, category_ids: []
 
   filter :title
   filter :author
@@ -23,6 +23,7 @@ ActiveAdmin.register Book do
       f.input :title
       f.input :author
       f.input :library, as: :select, collection: Library.all
+      f.input :borrower_id
       f.input :category_ids, as: :check_boxes, collection: Category.all
     end
     f.actions
@@ -42,7 +43,7 @@ ActiveAdmin.register Book do
 
   controller do
     def create
-      book_params = params.require(:book).permit(:title, :author, :library_id, category_ids: [])
+      book_params = params.require(:book).permit(:title, :author, :library_id, :borrower_id, category_ids: [])
       category_ids = book_params.delete(:category_ids).reject(&:blank?)
       book = Book.create(book_params)
 

@@ -1,14 +1,45 @@
 <div class="container my-5">
-  <% if user_signed_in? %>
+    <% if current_user.is_admin? %>
     <div class="row justify-content-center">
       <div class="col-md-8 text-center">
-        <h2>Welcome to BookLibrary</h2>
-        <p>You are signed in as <%= current_user.email %>.</p>
         <div class="mb-3">
           <%= link_to "Admin Dashboard", admin_root_path, class: "btn btn-primary btn-lg mx-2" %>
-          <%= button_to "Logout", destroy_user_session_path, method: :delete, class: "btn btn-danger btn-lg mx-2" %>
         </div>
-
- 
+      </div>
+    </div>
+    <% end %>
+  <%= render 'shared/category_filter' %>
+  <h1 class="text-center mb-4">Books</h1>
+  <% if @books.any? %>
+    <div class="table-responsive">
+      <table class="table table-striped table-bordered align-middle">
+        <thead class="table-dark">
+          <tr>
+            <th>Title</th>
+            <th>Author</th>
+            <th>Categories</th>
+            <th>Comments</th>
+            <% if current_user.number_of_books <= 2 %>
+            <th></th>
+            <% end %>
+          </tr>
+        </thead>
+        <tbody>
+          <% @books.each do |book| %>
+            <tr>
+              <td><%= book.title %></td>
+              <td><%= book.author %></td>
+              <td><%= book.categories.map(&:name).join(", ") %></td>
+              <td><%= book.comments.map(&:content).join("<br>").html_safe %></td>
+              <td>
+                <%= button_to "#{book.borrowed? ? 'Unavailable' : 'Borrow Book'}", borrow_book_path(book), method: :post, class: "btn #{book.borrowed? ? 'btn-secondary' : 'btn-primary'} btn-sm" %>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  <% else %>
+    <p class="text-center">No books available at the moment.</p>
   <% end %>
 </div>

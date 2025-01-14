@@ -6,7 +6,7 @@ ActiveAdmin.register User do
       f.input :email
       f.input :password
       f.input :password_confirmation
-      f.input :role, as: :select, collection: ['user', 'admin'], include_blank: false
+      f.input :role, as: :select, collection: [ "user", "admin" ], include_blank: false
     end
     f.actions
   end

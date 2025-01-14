@@ -1,0 +1,38 @@
+<%= render 'shared/category_filter' %>
+<h1>My Borrowed Books</h1>
+<% if @borrowed_books.any? %>
+  <table class="table table-striped">
+    <thead class='table-dark'>
+      <tr>
+        <th>Title</th>
+        <th>Borrowed At</th>
+        <th>Time Remaining</th>
+        <th>My Comments</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @borrowed_books.each do |book| %>
+        <tr class='align-middle'>
+          <td> 
+            <%= link_to book.title, borrowed_book_path(book), class: '' %>
+            </td>
+            <td><%= book.borrowered_at.strftime("%B %d, %Y") %></td>
+            <td><%= distance_of_time_in_words(Time.current, book.borrowered_at + 2.weeks) %> remaining</td>
+            <td>
+            <% book.comments.each do |comment| %>
+                <% if comment.user_id == current_user.id %>
+                <%= comment.content %><br>
+                <% end %>
+            <% end %>
+            </td>
+            <td>
+            <%= button_to 'Return', return_borrowed_book_path(book), method: :post, class: 'btn btn-danger' %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+<% else %>
+  <p>You have no borrowed books.</p>
+<% end %>

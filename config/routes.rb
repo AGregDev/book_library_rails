@@ -1,10 +1,8 @@
 Rails.application.routes.draw do
-  # ActiveAdmin routes
   ActiveAdmin.routes(self)
 
-  # Devise routes with custom controllers and path names
   devise_for :users, controllers: {
-    sessions: 'users/sessions'
+    sessions: "users/sessions"
   }, path: "auth", path_names: {
     sign_in: "login",
     sign_out: "logout",
@@ -15,6 +13,24 @@ Rails.application.routes.draw do
     sign_up: "cmon_let_me_in"
   }
 
-  # Root route
+  namespace :api do
+    resources :users
+    resources :books
+  end
+
+  resources :books do
+    member do
+      post :borrow
+      resources :comments, only: [ :destroy ]
+    end
+  end
+
+  resources :borrowed_books, only: [ :index, :show, :update ] do
+    member do
+      post :return
+      post :comment
+    end
+  end
+
   root to: "home#index"
 end
