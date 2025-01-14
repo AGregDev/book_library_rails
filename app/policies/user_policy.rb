@@ -1,20 +1,13 @@
 class UserPolicy < ApplicationPolicy
   def create?
-    user.is_admin?
-  end
-
-  def destroy?
-    user.is_admin?
+    user.admin?
   end
 
   def update?
-    user.is_admin?
+    user.admin?
   end
 
-  class Scope < ApplicationPolicy::Scope
-    # NOTE: Be explicit about which records you allow access to!
-    # def resolve
-    #   scope.all
-    # end
+  def destroy?
+    user.admin?
   end
 end
