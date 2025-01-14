@@ -38,20 +38,21 @@ jobs:
         run: bin/rubocop -f github
 
   test:
-    runs-on: ubuntu-latest
+  runs-on: ubuntu-latest
 
-    services:
-       postgres:
-        image: postgres:10.8
-        env:
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: ""
-          POSTGRES_HOST_AUTH_METHOD: trust
-          POSTGRES_DB: postgres
-        ports:
+  services:
+    postgres:
+      image: postgres:10.8
+      env:
+        POSTGRES_USER: postgres
+        POSTGRES_PASSWORD: ""
+        POSTGRES_DB: postgres
+        POSTGRES_HOST_AUTH_METHOD: trust
+      ports:
         - 5432:5432
-        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
-    steps:
+      options: --health-cmd=pg_isready --health-interval=10s --health-timeout=5s --health-retries=5
+
+  steps:
     - name: Checkout code
       uses: actions/checkout@v4
 
@@ -61,17 +62,17 @@ jobs:
         ruby-version: .ruby-version
         bundler-cache: true
 
-
     - name: Install dependencies
       run: |
         bundle install
 
     - name: Setup DB, Run tests
       env:
-        PGHOST: postgres
+        PGHOST: localhost
         PGUSER: postgres
-        PGPORT: ${{ job.services.postgres.ports[5432] }}
+        PGPORT: 5432
         RAILS_ENV: test
       run: |
         bin/rails db:create db:schema:load
         bundle exec rspec
+
