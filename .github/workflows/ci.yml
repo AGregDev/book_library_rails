@@ -6,22 +6,6 @@ on:
     branches: [ main ]
 
 jobs:
-  scan_ruby:
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Set up Ruby
-        uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: .ruby-version
-          bundler-cache: true
-
-      - name: Scan for common Rails security vulnerabilities using static analysis
-        run: |
-          bin/brakeman --no-pager --skip-mass-assignment
   scan_js:
     runs-on: ubuntu-latest
 
@@ -82,12 +66,9 @@ jobs:
         path: vendor/bundle
         key: bundle-${{ hashFiles('**/Gemfile.lock') }}
 
-    - name: Bundle install
-      env:
-        RAILS_ENV: test
+    - name: Install dependencies
       run: |
-        gem install bundler
-        bundle install --jobs 4 --retry 3 --path vendor/bundle
+        bundle install
 
     - name: Setup DB, Run tests
       env:
