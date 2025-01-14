@@ -46,7 +46,11 @@ module Api
     end
 
     def user_params
-      params.require(:user).permit(:email, :password, :role)
+      if current_user.is_admin?
+        params.require(:user).permit(:email, :password, :role)
+      else
+        params.require(:user).permit(:email, :password)
+      end
     end
   end
 end

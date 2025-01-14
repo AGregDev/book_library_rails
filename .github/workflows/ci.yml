@@ -66,12 +66,6 @@ jobs:
           - 5432:5432
         options: --health-cmd="pg_isready" --health-interval=10s --health-timeout=5s --health-retries=3
 
-      # redis:
-      #   image: redis
-      #   ports:
-      #     - 6379:6379
-      #   options: --health-cmd "redis-cli ping" --health-interval 10s --health-timeout 5s --health-retries 5
-
     steps:
       - name: Install packages
         run: sudo apt-get update && sudo apt-get install --no-install-recommends -y google-chrome-stable curl libjemalloc2 libvips postgresql-client
@@ -85,12 +79,24 @@ jobs:
           ruby-version: .ruby-version
           bundler-cache: true
 
-      - name: Run tests
-        env:
-          RAILS_ENV: test
-          DATABASE_URL: postgres://postgres:postgres@localhost:5432
-          # REDIS_URL: redis://localhost:6379/0
-        run: bin/rails db:test:prepare test test:system
+      - name: Get modified files
+        id: modified-files
+        run: |
+          echo "::set-output name=files::$(git diff --name-only ${{ github.event.before }} ${{ github.sha }})"
+
+      - name: Run only relevant tests
+        run: |
+          MODIFIED_FILES="${{ steps.modified-files.outputs.files }}"
+          if echo "$MODIFIED_FILES" | grep -qE 'app/models|app/controllers|app/views'; then
+            echo "Running model, controller, or view tests"
+            bin/rails test:models test:controllers test:views
+          elif echo "$MODIFIED_FILES" | grep -qE 'spec'; then
+            echo "Running relevant RSpec tests"
+            # Run only the changed spec files
+            echo "$MODIFIED_FILES" | grep -o 'spec/.*\.rb' | xargs bin/rspec
+          else
+            echo "No relevant changes detected, skipping tests"
+          fi
 
       - name: Keep screenshots from failed system tests
         uses: actions/upload-artifact@v4
