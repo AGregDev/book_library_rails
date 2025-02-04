@@ -69,7 +69,7 @@ gem "activeadmin", "~> 3.2"
 gem "sassc-rails"
 
 gem "bootstrap"
-gem "rubocop", "~> 1.69"
+gem "rubocop", "~> 1.71"
 gem "whenever", require: false
 
 gem "pundit"
